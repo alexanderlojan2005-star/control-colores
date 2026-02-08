@@ -133,6 +133,25 @@ r.style.display=
 });
 }
 </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAteYHApDTf3JIVvSB_10GYzuZxuAnsuHk",
+    authDomain: "control-colores.firebaseapp.com",
+    projectId: "control-colores",
+    storageBucket: "control-colores.appspot.com",
+    messagingSenderId: "138388956224",
+    appId: "1:138388956224:web:43954e90146fd134e62ba5"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  console.log("🔥 Firebase conectado correctamente");
+</script>
 
 </body>
 </html>
+
