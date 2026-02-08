@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Control Diario de Colores</title>
+
+<style>
+body{font-family:Arial;background:#f4f6f8;padding:20px}
+h2{text-align:center}
+input,select,button{padding:6px;margin:4px}
+.container{background:white;padding:15px;border-radius:8px;margin-bottom:15px}
+table{width:100%;border-collapse:collapse;background:white}
+th,td{border:1px solid #ccc;padding:8px;text-align:center}
+th{background:#eaeaea}
+tr.listo{background:#ccffcc}
+tr.pendiente{background:#ffd6d6}
+.btn{border:none;padding:6px 10px;border-radius:4px;cursor:pointer}
+.edit{background:#3498db;color:white}
+.save{background:#27ae60;color:white}
+.btn-delete{background:#e74c3c;color:white}
+</style>
+</head>
+
+<body>
+
+<h2>🎨 Control Diario de Colores</h2>
+
+<div class="container">
+<b>Registrar color</b><br>
+<input type="date" id="fecha">
+<input type="text" id="color" placeholder="Color">
+<select id="cantidad">
+<option>1/32</option><option>1/16</option><option>1/8</option>
+<option>1/4</option><option>1/2 Lt</option><option>1 Lt</option><option>1 Galón</option>
+</select>
+<input type="text" id="calidad" placeholder="Calidad">
+<select id="pagado"><option>SI</option><option>NO</option></select>
+<input type="text" id="info" placeholder="Info adicional">
+<button onclick="agregarFila()">Agregar</button>
+</div>
+
+<div class="container">
+<b>Filtros</b><br>
+<input type="text" id="fColor" placeholder="Filtrar color" onkeyup="filtrar()">
+<input type="text" id="fCalidad" placeholder="Filtrar calidad" onkeyup="filtrar()">
+<input type="date" id="fFecha" onchange="filtrar()">
+</div>
+
+<table id="tabla">
+<thead>
+<tr>
+<th>Fecha</th><th>Color</th><th>Cantidad</th><th>Calidad</th>
+<th>Pagado</th><th>Info</th><th>Estado</th><th>Acciones</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<!-- ================= JS NORMAL ================= -->
+<script>
+function agregarFila(){
+const t=document.querySelector('#tabla tbody');
+const f=document.createElement('tr');
+f.className='pendiente';
+f.innerHTML=`
+<td contenteditable>${fecha.value}</td>
+<td contenteditable>${color.value}</td>
+<td contenteditable>${cantidad.value}</td>
+<td contenteditable>${calidad.value}</td>
+<td contenteditable>${pagado.value}</td>
+<td contenteditable>${info.value}</td>
+<td><button class="btn edit" onclick="toggleEstado(this)">PENDIENTE</button></td>
+<td>
+<button class="btn edit" onclick="editarFila(this)">✏️</button>
+<button class="btn btn-delete" onclick="eliminarFila(this)">🗑️</button>
+</td>`;
+t.appendChild(f);
+}
+
+function toggleEstado(b){
+const fila=b.closest('tr');
+if(b.innerText==='PENDIENTE'){
+  b.innerText='LISTO';fila.className='listo';
+}else{
+  b.innerText='PENDIENTE';fila.className='pendiente';
+}
+}
+
+function editarFila(b){
+b.closest('tr').querySelectorAll('[contenteditable]').forEach(c=>c.focus());
+}
+
+function eliminarFila(b){
+if(confirm('¿Eliminar este pedido?')) b.closest('tr').remove();
+}
+
+function filtrar(){
+const fc=fColor.value.toLowerCase();
+const fca=fCalidad.value.toLowerCase();
+const ff=fFecha.value;
+document.querySelectorAll('#tabla tbody tr').forEach(r=>{
+const v1=r.cells[1].innerText.toLowerCase();
+const v2=r.cells[3].innerText.toLowerCase();
+const v3=r.cells[0].innerText;
+r.style.display=(v1.includes(fc)&&v2.includes(fca)&&(ff===''||v3===ff))?'':'none';
+});
+}
+</script>
+
+<!-- ================= FIREBASE ================= -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAteYHApDTf3JIVvSB_10GYzuZxuAnsuHk",
+  authDomain: "control-colores.firebaseapp.com",
+  projectId: "control-colores",
+  storageBucket: "control-colores.firebasestorage.app",
+  messagingSenderId: "138388956224",
+  appId: "1:138388956224:web:43954e90146fd134e62ba5"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+console.log("🔥 Firebase conectado correctamente");
+</script>
+
+</body>
+</html>
+
