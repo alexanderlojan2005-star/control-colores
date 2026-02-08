@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Control Diario de Colores</title>
+
 <style>
 body{font-family:Arial;background:#f4f6f8;padding:20px}
 h2{text-align:center}
@@ -16,9 +17,10 @@ tr.pendiente{background:#ffd6d6}
 .btn{border:none;padding:6px 10px;border-radius:4px;cursor:pointer}
 .edit{background:#3498db;color:white}
 .save{background:#27ae60;color:white}
-delete{background:#e74c3c;color:white}
+.btn-delete{background:#e74c3c;color:white}
 </style>
 </head>
+
 <body>
 
 <h2>🎨 Control Diario de Colores</h2>
@@ -28,7 +30,8 @@ delete{background:#e74c3c;color:white}
 <input type="date" id="fecha">
 <input type="text" id="color" placeholder="Color">
 <select id="cantidad">
-<option>1/32</option><option>1/16</option><option>1/8</option><option>1/4</option><option>1/2 Lt</option><option>1 Lt</option><option>1 Galón</option>
+<option>1/32</option><option>1/16</option><option>1/8</option>
+<option>1/4</option><option>1/2 Lt</option><option>1 Lt</option><option>1 Galón</option>
 </select>
 <input type="text" id="calidad" placeholder="Calidad">
 <select id="pagado"><option>SI</option><option>NO</option></select>
@@ -46,12 +49,14 @@ delete{background:#e74c3c;color:white}
 <table id="tabla">
 <thead>
 <tr>
-<th>Fecha</th><th>Color</th><th>Cantidad</th><th>Calidad</th><th>Pagado</th><th>Info</th><th>Estado</th><th>Acciones</th>
+<th>Fecha</th><th>Color</th><th>Cantidad</th><th>Calidad</th>
+<th>Pagado</th><th>Info</th><th>Estado</th><th>Acciones</th>
 </tr>
 </thead>
 <tbody></tbody>
 </table>
 
+<!-- ================= JS NORMAL ================= -->
 <script>
 function agregarFila(){
 const t=document.querySelector('#tabla tbody');
@@ -67,25 +72,26 @@ f.innerHTML=`
 <td><button class="btn edit" onclick="toggleEstado(this)">PENDIENTE</button></td>
 <td>
 <button class="btn edit" onclick="editarFila(this)">✏️</button>
-<button class="btn delete" onclick="eliminarFila(this)">🗑️</button>
+<button class="btn btn-delete" onclick="eliminarFila(this)">🗑️</button>
 </td>`;
 t.appendChild(f);
 }
 
 function toggleEstado(b){
 const fila=b.closest('tr');
-if(b.innerText==='PENDIENTE'){b.innerText='LISTO';fila.className='listo';}
-else{b.innerText='PENDIENTE';fila.className='pendiente';}
+if(b.innerText==='PENDIENTE'){
+  b.innerText='LISTO';fila.className='listo';
+}else{
+  b.innerText='PENDIENTE';fila.className='pendiente';
+}
 }
 
 function editarFila(b){
-const fila=b.closest('tr');
-const celdas=fila.querySelectorAll('td[contenteditable]');
-celdas.forEach(c=>c.focus());
+b.closest('tr').querySelectorAll('[contenteditable]').forEach(c=>c.focus());
 }
 
 function eliminarFila(b){
-if(confirm('¿Eliminar este pedido?'))b.closest('tr').remove();
+if(confirm('¿Eliminar este pedido?')) b.closest('tr').remove();
 }
 
 function filtrar(){
@@ -99,6 +105,26 @@ const v3=r.cells[0].innerText;
 r.style.display=(v1.includes(fc)&&v2.includes(fca)&&(ff===''||v3===ff))?'':'none';
 });
 }
+</script>
+
+<!-- ================= FIREBASE ================= -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAteYHApDTf3JIVvSB_10GYzuZxuAnsuHk",
+  authDomain: "control-colores.firebaseapp.com",
+  projectId: "control-colores",
+  storageBucket: "control-colores.firebasestorage.app",
+  messagingSenderId: "138388956224",
+  appId: "1:138388956224:web:43954e90146fd134e62ba5"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+console.log("🔥 Firebase conectado correctamente");
 </script>
 
 </body>
